@@ -62,11 +62,11 @@
    заходим в virtual box, добавляем порт какой нравится, у меня это будет 12088
    > также можно типо номер варианта сделать 10188, 10288, ни на что не влияет
    
-   ![image](https://github.com/user-attachments/assets/ab1e6ed5-0c1f-4ac9-8acd-9ed76465b8a6)
+   ![image](https://github.com/vasmaae/SSPR/blob/main/img/1%20-%20virtualBoxPorts.png)
    > также надо прописать для jenkins 8080 и для второго контейнера какой нравится
 
    теперь надо добавить в nginx.conf инфу о нашем сайтике (и об остальном чтобы не заходить несколько раз)
-   ![image](https://github.com/user-attachments/assets/84a26434-c5cb-484d-891b-f82329107a5a)  
+   ![image](https://github.com/vasmaae/SSPR/blob/main/img/2%20-%20nginxCfg.png)  
    (3 прикол это jenkins)  
    не забываем перезапустить nginx
    ```shell
@@ -126,21 +126,21 @@
 
    просто копировать команды не буду, качаем как [тут](https://www.jenkins.io/doc/book/installing/linux/) сказано в общем (стоит контейнеру выдать побольше ресурсов, если будет тормозить)
 
-   это в конце:   ![image](https://github.com/user-attachments/assets/5bb22e82-0ac2-4cbb-ac00-fb121860e5cd)
+   это в конце:   ![image](https://github.com/vasmaae/SSPR/blob/main/img/3%20-%20jenkinsStart.png)
 
    т.к. порты мы уже пробросили (не забыли уже?), открываем в браузере просто порт, там всё должно быть понятно: пароль выводим через cat <filename>, устанавливаем рекомендуемые плагины
 ---
    Тут добавляем Docker, чтобы работал:
 
-   ![Без имени](https://github.com/user-attachments/assets/f72f8570-7c86-4645-a403-1f20d160eb8d)
+   ![Без имени](https://github.com/vasmaae/SSPR/blob/main/img/4%20-%20jenkins-plugins.png)
 
-   (често хз нужны ли все) ![image](https://github.com/user-attachments/assets/b575f978-79fc-4b03-a264-6fe6834d11bc)
+   (често хз нужны ли все) ![image](https://github.com/vasmaae/SSPR/blob/main/img/5%20-%20jenkinsDocker.png)
 
-   дальше тут выбираем создать item ![image](https://github.com/user-attachments/assets/e32f75f0-d527-46b6-9efe-9253f0511cc5)
+   дальше тут выбираем создать item ![image](https://github.com/vasmaae/SSPR/blob/main/img/6%20-%20jenkinsDashboard.png)
 
-   и тут Pipeline ![image](https://github.com/user-attachments/assets/b25828ec-b8f7-4c41-9500-76a87faa8a0f)
+   и тут Pipeline ![image](https://github.com/vasmaae/SSPR/blob/main/img/7%20-%20jenkinsPipeline.png)
 
-   проматываем вниз и вставляем код (либо, там ещё в других версиях гайда накидали возможностей) ![image](https://github.com/user-attachments/assets/d386aabb-c781-4180-aa08-91062aabe26c)
+   проматываем вниз и вставляем код (либо, там ещё в других версиях гайда накидали возможностей) ![image](https://github.com/vasmaae/SSPR/blob/main/img/8%20-%20jenkinsPipelineScript.png)
 
    ### также используем <ваш_докер_ник>/lab5
 
