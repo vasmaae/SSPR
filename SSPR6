@@ -1,0 +1,142 @@
+!!!ВЫЖНАЯ ИНФОРМАЦИЯ!!!
+ЭТОТ ГАЙД ПОМОЖЕТ ТЕМ, КТО ДЕЛАЛ 5 ЛБ ПО ПРЕДЫДУЩЕМУ ГАЙДУ ОТ СТЕПАНА(на js)
+ГАЙД ПО 8 ВАРИАНТУ!!!
+на первом контейнере создаем папку для сервера:
+mkdir labwork6
+cd labwork6
+
+в нём:
+nano server.js
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+const port = 3000;
+
+app.use(bodyParser.json());
+
+app.post('/labwork6', (req, res) => {
+    const matrix = req.body.matrix;
+    if (!Array.isArray(matrix) || !matrix.every(row => Array.isArray(row) && row.length === matrix.length)) {
+        return res.status(400).send('Invalid matrix');
+    }
+
+    let maxElement = -Infinity;
+    for (let i = 0; i < matrix.length; i++) {
+        for (let j = i + 1; j < matrix.length; j++) {
+            if (matrix[i][j] > maxElement) {
+                maxElement = matrix[i][j];
+            }
+        }
+    }
+
+    res.json({ maxElementAboveDiagonal: maxElement });
+});
+
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+});
+//сохраняем выходим
+
+nano Dockerfile
+# Dockerfile.server
+FROM node:16
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm install express body-parser
+
+EXPOSE 3000
+//сохраняем выходим
+
+docker build -t server .
+
+далее идем во 2 контейнер-клиент:
+mkdir labwork6
+cd labwork6/
+nano client.js
+//client.js
+const axios = require('axios');
+const readline = require('readline');
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+function promptMatrix() {
+    rl.question('Enter the size of the matrix (e.g., 3 for a 3x3 matrix): ', (size) => {
+        size = parseInt(size);
+        if (isNaN(size) || size <= 0) {
+            console.log('Invalid size. Please enter a positive integer.');
+            return promptMatrix();
+        }
+
+        const matrix = [];
+        let rowCount = 0;
+
+        function promptRow() {
+            rl.question(`Enter row ${rowCount + 1} (comma-separated values): `, (rowInput) => {
+                const row = rowInput.split(',').map(Number);
+                if (row.length !== size || row.some(isNaN)) {
+                    console.log('Invalid row. Please enter valid numbers separated by commas.');
+                    return promptRow();
+                }
+                matrix.push(row);
+                rowCount++;
+
+                if (rowCount < size) {
+                    promptRow();
+                } else {
+                    sendMatrix(matrix);
+                }
+            });
+        }
+
+        promptRow();
+    });
+}
+
+function sendMatrix(matrix) {
+    axios.post('http://192.168.8.108:3000/labwork6', { matrix })
+        .then(response => {
+            console.log('Max element above diagonal:', response.data.maxElementAboveDiagonal);
+            promptMatrix(); // Запрашиваем новую матрицу
+        })
+        .catch(error => {
+            console.error('Error:', error.message);
+            promptMatrix(); // Запрашиваем новую матрицу в случае ошибки
+        });
+}
+
+promptMatrix();
+//сохраняем и выходим, вместо '192.168.8.108' пишим ip своего первого контейнера
+nano Dockerfile
+# Dockerfile.client
+FROM node:16
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm install axios readline
+
+CMD ["node", "client.js"]
+//сохраняем и закрываем
+docker build -t client .
+полсе запускаем:
+сначала в конейнере-сервере(1) прописываем:
+docker run -d -p 3000:3000 --name server server
+полсе в контейнере-клиенте(2):
+docker run -it --name client client
+почти всё, теперь в контейнере-сервере:
+docker stop server
+docker start server
+в контейнере-клиенте:
+docker stop client
+docker start -i cleint
+теперь всё должно работать, вы работаете через клиента(показываете работоспособность)
+для того, чтобы доказать взаимодействия приложений, в контейнере сервере пропишите:
+docker stop server(сервер остановится, при условии того, что вы до этого прописали docker start server)
